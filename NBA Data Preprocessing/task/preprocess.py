@@ -86,24 +86,18 @@ def transform_data(X: pd.DataFrame) -> (pd.DataFrame, pd.Series):
     # Split the data into numeric and categorical columns
     X_num = X.select_dtypes(include='number')
     X_cat = X.select_dtypes(exclude='number')
-
     # use get_dummies on categories
     X_cat_encoded = pd.get_dummies(X_cat)
-
     # Fit and transform the numeric columns using a StandardScaler
     scaler = StandardScaler()
     X_num_scaled = scaler.fit_transform(X_num)
-
     # Combine the scaled numeric columns and encoded categorical columns
     X_final = pd.concat([pd.DataFrame(X_num_scaled, columns=X_num.columns), X_cat_encoded], axis=1)
-    # clean column names by hand
-    X_final.columns = X_final.columns.map(lambda x: x.removeprefix('team_'))
-    X_final.columns = X_final.columns.map(lambda x: x.removeprefix('position_'))
-    X_final.columns = X_final.columns.map(lambda x: x.removeprefix('country_'))
-    X_final.columns = X_final.columns.map(lambda x: x.removeprefix('draft_round_'))
-
-    # Return the transformed data and the target variable
+    # remove prefix from column names ['team_', 'position_', 'country_', 'draft_round_']
+    for c in X_cat.columns.to_list():
+        X_final.columns = X_final.columns.map(lambda x: x.removeprefix(c + '_'))
     return X_final, y
+
 
 df = multicol_data(feature_data(clean_data(data_path)))
 X, y = transform_data(df)
