@@ -1,0 +1,45 @@
+<h5 id="description">Description</h5>
+<p>The returned DataFrame from the <code class="language-python">multicol_data</code> function in the previous stage has both numerical and categorical features. You can separate them by running the following code:</p>
+<pre><code class="language-python">num_feat_df = df.select_dtypes('number')  # numerical features
+cat_feat_df = df.select_dtypes('object')  # categorical features</code></pre>
+<p>You can find out that the numerical features are on different scales by running <code class="language-python">num_feat_df.describe()</code>. The thing is that the linear models work significantly better when their numerical features are on the same scale.<strong><span style="color: #ff4363;"> </span></strong>That means you have to <a href="https://www.youtube.com/watch?v=9pYNdd9Vde0" rel="noopener noreferrer nofollow" target="_blank">standardize</a> the numerical features to quickly achieve convergence when finding the global minimum using gradient descent. Standardize numerical features using <code class="language-python">sklearn</code>'s <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html" rel="noopener noreferrer nofollow" target="_blank">StandardScaler</a> function.</p>
+<p></p><div class="alert alert-warning">Despite the target variable <code class="language-python">salary</code> is a numerical feature, do not transform it in any way.</div>
+<p>There are also categorical features in the data. Categorical features can be <strong>ordinal</strong> or <strong>nominal</strong>. The ordinal ones denote some form of an order or rank (for example, first, second, or third place in the contest), while the nominal categorical features do not have a natural order (cold, hot, very hot). You need to transform these categorical features appropriately. Transform the ordinal and nominal categorical features using <code class="language-python">sklearn</code>'s <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OrdinalEncoder.html" rel="noopener noreferrer nofollow" target="_blank">OrdinalEncoder</a> and <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html" rel="noopener noreferrer nofollow" target="_blank">OneHotEncoder</a> classes respectively. Although, in this project, you will deal with the nominal features only.</p>
+<p>When you <a href="https://hackernoon.com/what-is-one-hot-encoding-why-and-when-do-you-have-to-use-it-e3c6186d008f" rel="noopener noreferrer nofollow" target="_blank">one-hot encode a categorical feature</a>, you convert the unique entries of that feature into new categorical features. Each new feature is a binary vector. As a result, the DataFrame gets larger, so mind two kinds of problems:</p>
+<ul>
+<li>You'll probably need a lot of data to train a model with many features. This problem is referred to as <a href="https://towardsdatascience.com/curse-of-dimensionality-a-curse-to-machine-learning-c122ee33bfeb" rel="noopener noreferrer nofollow" target="_blank">the curse of dimensionality</a>;</li>
+<li>It may take a long time to train the model.</li>
+</ul>
+<h5 id="objectives">Objectives</h5>
+<p>In this stage, implement the data preprocessing pipeline inside the <code class="language-python">transform_data</code> function. Your function must:</p>
+<ol>
+<li>As the input parameter, take the DataFrame returned from <code class="language-python">multicol_data</code> function, which you implemented in the previous stage;</li>
+<li>Transform numerical features in the DataFrame it got from <code class="language-python">multicol_data</code> using <code class="language-python">StandardScaler</code>;</li>
+<li>Transform nominal categorical variables in the DataFrame using <code class="language-python">OneHotEncoder</code>;</li>
+<li>Concatenate the transformed numerical and categorical features in the following order: numerical features, then nominal categorical features;</li>
+<li>Return two objects: <code class="language-python">X</code>, where all the features are stored, and <code class="language-python">y</code> with the target variable.</li>
+</ol>
+<p></p><div class="alert alert-primary">
+<ul>
+<li><code class="language-python">StandardScaler</code> returns an array in the same order as the input. Therefore, they have the same names.</li>
+<li>Use <code class="language-python">OneHotEncoder</code>'s <code class="language-python">categories_</code> attribute to get the returned array feature names.</li>
+</ul>
+<p></p></div>
+<p>Bear in mind that the default setting of <code class="language-python">OneHotEncoder</code>'s <code class="language-python">sparse</code> parameter is <code class="language-python">True</code>. You can use <code class="language-python">pd.DataFrame.sparse.from_spmatrix</code> to create a DataFrame from the sparse matrix.</p>
+<p></p><div class="alert alert-primary">Your program is not required to print anything as a result. The <code class="language-python">clean_data</code>, <code class="language-python">feature_data</code>, <code class="language-python">multicol_data</code>, and <code class="language-python">transform_data</code> functions will be imported to the test program and checked there. So make sure to follow all the objectives described above.</div>
+<h5 id="examples">Examples</h5>
+<p><strong>Example 1</strong>:<em> calling the </em><code class="language-python">transform_data</code><em> function with the path:</em></p>
+<pre><code class="language-python">path = "../Data/nba2k-full.csv"
+df_cleaned = clean_data(path)
+df_featured = feature_data(df_cleaned)
+df = multicol_data(df_featured)
+X, y = transform_data(df)
+
+answer = {
+    'shape': [X.shape, y.shape],
+    'features': list(X.columns),
+    }
+print(answer)</code></pre>
+<p><em>Output:</em></p>
+<pre><code class="language-no-highlight">{'shape': [(439, 46), (439,)], 'features': ['rating', 'experience' ... '0', '1', '2']}
+</code></pre>

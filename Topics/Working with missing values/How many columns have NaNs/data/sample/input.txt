@@ -1,0 +1,16 @@
+year,age,degree
+3,18,M
+NaN,18,B
+2,21,M
+NaN,19,B
+NaN,19,B
+2,29,NaN
+1,28,NaN
+3,29,M
+1,28,M
+3,18,NaN
+1,27,NaN
+2,25,M
+2,20,M
+1,20,B
+3,23,B

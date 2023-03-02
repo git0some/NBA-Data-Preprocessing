@@ -1,0 +1,35 @@
+type: dataset
+files:
+- name: main.py
+  visible: true
+  text: "#  write your code here \n\n"
+  learner_created: false
+- name: data/sample/input.txt
+  visible: true
+  text: |
+    year,degree,age
+    3,M,18
+    NaN,B,18
+    2,M,21
+    NaN,B,19
+    NaN,B,19
+    2,NaN,29
+    1,NaN,28
+    3,M,29
+    1,M,28
+    3,NaN,18
+    1,NaN,27
+    2,M,25
+    2,M,20
+    1,B,20
+    3,B,23
+  learner_created: false
+- name: data/dataset/input.txt
+  visible: true
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/14690#comment
+status: Solved
+feedback:
+  message: <html>Correct solution</html>
+  time: "Fri, 24 Feb 2023 20:29:42 UTC"
+record: -1

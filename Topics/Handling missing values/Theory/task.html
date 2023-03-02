@@ -1,0 +1,100 @@
+<h2>Handling missing values</h2>
+<html><body><p>In the introductory topic about missing values, you saw how we can detect and delete them. In this topic, you are going to learn more advanced methods to handle missing values in your data.</p>
+<h5 id="stating-a-problem">Stating a problem</h5>
+<p>Why can't we always just delete <code class="language-python">NaN</code>s (= missing values) and forget about them? Let's look at <a href="https://stepik.org/media/attachments/lesson/571584/flatstoydata.csv" rel="noopener noreferrer nofollow" target="_blank">the dataset</a> below.</p>
+<pre><code class="language-python">        district  totsp  balconysp  dist2subway  price  security
+0   Python-beach   77.0        5.8          NaN  142.0       NaN
+1      East Java  100.0        8.6          0.9    NaN       NaN
+2      East Java   64.0        NaN          0.7  120.0       0.0
+3      East Java    NaN        4.1          0.7  110.0       1.0
+4   Python-beach   75.0        NaN          1.6  143.0       NaN
+5   Python-beach   60.0        4.2          NaN  155.0       NaN
+6      East Java   71.0        NaN          0.3  170.0       NaN
+7    Kotlin-side   75.0        4.1          0.8  122.0       1.0
+8            NaN   76.0        5.1          1.2  131.0       NaN
+9    Kotlin-side  134.0        8.8          NaN  730.0       NaN
+10   Kotlin-side   58.0        NaN          2.8  108.0       NaN
+11     East Java   79.0        6.1          NaN  130.0       1.0
+12  Python-beach   79.0        NaN          1.1  118.0       NaN
+13  Python-beach   80.0        5.8          NaN  160.0       NaN
+14   Kotlin-side   63.0        3.4          NaN   95.0       NaN
+15  Python-beach   85.0        4.8          1.3    NaN       NaN</code></pre>
+<p>We apply the delete-all-rows-with-<code class="language-python">NaN</code>s method:</p>
+<pre><code class="language-python">data.dropna()</code></pre>
+<p>And that is what we are left with:</p>
+<pre><code class="language-python">      district  totsp  balconysp  dist2subway  price  security
+7  Kotlin-side   75.0        4.1          0.8  122.0       1.0</code></pre>
+<p>That happened because each row in our toy dataset contains a missing value. In reality, even a good dataset can contain 80% of rows with <code class="language-python">NaN</code>s in different columns. <code class="language-python">dropna()</code> would delete 80% of the data. This method isn't suitable for us because together with missing values we would lose a lot of valuable information.</p>
+<p>However, it makes sense to drop the <code class="language-python">security</code> column, which consists almost entirely of missing values.</p>
+<pre><code class="language-python">data.dropna(axis=1, thresh=10, inplace=True)</code></pre>
+<p>Recall the parameters: <code class="language-python">axis=1</code> deletes columns instead of rows, <code class="language-python">thresh=10</code> requires that a column has at least <span style="color: #000000;">10</span> non-<code class="language-python">NaN</code>s to survive, and <code class="language-python">inplace=True</code> saves the changes in the original <code class="language-python">DataFrame</code>.</p>
+<p>Here is the result:</p>
+<pre><code class="language-python">        district  totsp  balconysp  dist2subway  price
+0   Python-beach   77.0        5.8          NaN  142.0
+1      East Java  100.0        8.6          0.9    NaN
+2      East Java   64.0        NaN          0.7  120.0
+3      East Java    NaN        4.1          0.7  110.0
+4   Python-beach   75.0        NaN          1.6  143.0
+5   Python-beach   60.0        4.2          NaN  155.0
+6      East Java   71.0        NaN          0.3  170.0
+7    Kotlin-side   75.0        4.1          0.8  122.0
+8            NaN   76.0        5.1          1.2  131.0
+9    Kotlin-side  134.0        8.8          NaN  730.0
+10   Kotlin-side   58.0        NaN          2.8  108.0
+11     East Java   79.0        6.1          NaN  130.0
+12  Python-beach   79.0        NaN          1.1  118.0
+13  Python-beach   80.0        5.8          NaN  160.0
+14   Kotlin-side   63.0        3.4          NaN   95.0
+15  Python-beach   85.0        4.8          1.3    NaN
+</code></pre>
+<h5 id="guessing-missing-data">Guessing missing data</h5>
+<p>In this section, we will get rid of <code class="language-python">NaN</code>s without deleting any of them. There are different methods to handle missing values in categorical and numerical features. For all cases, we will use <code class="language-python">pandas.Series.fillna()</code>, which basically takes a value and fills all the holes in a column.</p>
+<p>To move further, we need to know the data context. The dataset above contains information about flats in Hyperskill city:</p>
+<ul>
+<li><code class="language-python">district</code> is district</li>
+<li><code class="language-python">totsp</code> is the total area of an apartment (m<sup>2</sup>)</li>
+<li><code class="language-python">balconysp</code> is an area of a balcony in the apartment (m<sup>2</sup>)</li>
+<li><code class="language-python">dist2subway</code> is a distance to the nearest subway station (km)</li>
+<li><code class="language-python">price</code> is the cost of a flat in thousands of dollars</li>
+</ul>
+<p>Here are some ways to handle missing values:</p>
+<p>1) Fill <code class="language-python">NaN</code>s with <strong>the most frequent value </strong>(<strong>the mode</strong> in the language of statistics) for categorical features:</p>
+<pre><code class="language-python">mode_district = data['district'].mode()[0] # calculate the mode
+data['district'].fillna(mode_district, inplace=True) # replace NaNs with that mode</code></pre>
+<p> 2) For numerical features, use the<strong> column average. </strong>In our dataset, we first process the <code class="language-python">totsp</code> column:</p>
+<pre><code class="language-python">mean_totsp = data['totsp'].mean() # calculate the average
+data['totsp'].fillna(mean_totsp, inplace=True) # replace NaNs with that average</code></pre>
+<p>We left <code class="language-python">dist2subway</code>, which is a distance to the nearest subway station. Let's be more elegant here. The knowledge of the district of a flat helps to guess the distance more accurately than the average for all data. Let's fill the missing values with the average for the district, where the given flat is located:</p>
+<pre><code class="language-python">data['dist2subway'] = data.groupby('district')['dist2subway'].apply(lambda x: x.fillna(x.mean()))</code></pre>
+<p>Looks complicated, but let's take it step by step. Firstly, <code class="language-python">data.groupby("district")</code> groups samples by their districts. Secondly, we take the <code class="language-python">dist2subway</code> column to process. Then, we use the <code class="language-python">apply()</code> method to apply a function inside, which is <code class="language-python">lambda x: ...</code>, group-wise. The function takes a set of samples, which belong to the same district, calculates the average distance, and fills the missing values in the group with that average.</p>
+<p>3) Fill the missing values with a<strong> median value</strong> for numerical features.<br/>
+This is usually the way to choose when a feature has outliers. They affect the average, so it no longer represents a typical value of this feature. Fortunately, outliers don't bother the median value.</p>
+<pre><code class="language-python">median_price = data['price'].median() # calculate the median value
+data['price'].fillna(median_price, inplace=True) # replace NaNs with that value</code></pre>
+<p>4) Replace all <code class="language-python">NaN</code>s with <strong>some</strong> <strong>value.</strong><br/>
+In other words, you might try and guess a value that is meaningful. Sometimes it's not possible. In our toy dataset, we suppose that <code class="language-python">NaN</code> in <code class="language-python">balconysp</code> means that there is no balcony in a flat, so its area equals zero. We replace missing values with <code class="language-python">0</code>, and it makes some sense.</p>
+<pre><code class="language-python">data['balconysp'].fillna(0, inplace=True)</code></pre>
+<p>When we can't find a meaningful value, we fill <code class="language-python">NaN</code>s with <code class="language-python">-1</code> to unite these observations in a separate group based on the absence of a value in some feature. Note that the method works for both categorical and numerical features.</p>
+<p>Finally, we got the data without missing values:</p>
+<pre><code class="language-python">        district  totsp  balconysp  dist2subway  price
+0   Python-beach   77.0        5.8         1.30  142.0
+1      East Java  100.0        8.6         0.90  130.5
+2      East Java   64.0        0.0         0.70  120.0
+3      East Java   78.4        4.1         0.70  110.0
+4   Python-beach   75.0        0.0         1.60  143.0
+5   Python-beach   60.0        4.2         1.30  155.0
+6      East Java   71.0        0.0         0.30  170.0
+7    Kotlin-side   75.0        4.1         0.80  122.0
+8   Python-beach   76.0        5.1         1.20  131.0
+9    Kotlin-side  134.0        8.8         1.80  730.0
+10   Kotlin-side   58.0        0.0         2.80  108.0
+11     East Java   79.0        6.1         0.65  130.0
+12  Python-beach   79.0        0.0         1.10  118.0
+13  Python-beach   80.0        5.8         1.30  160.0
+14   Kotlin-side   63.0        3.4         1.80   95.0
+15  Python-beach   85.0        4.8         1.30  130.5
+</code></pre>
+<h5 id="conclusion">Conclusion</h5>
+<p>In this topic, you explored different ideas on how to calculate or guess a value to fill missing values. Here is a cheat sheet:</p>
+<p style="text-align: center;"><img alt="" height="289" name="handling_missing_values.svg" src="https://ucarecdn.com/7e78c733-49f6-4c85-9fef-cf8eee7066e8/" width="396"/></p>
+<p>The topic covers some basics about missing values. It is a good starting point for exploring more complicated and intelligent methods to deal with <code class="language-python">NaN</code>s. As usual, in data science, there is no universal algorithm — you just try different approaches and keep track of your model's performance.</p></body></html>

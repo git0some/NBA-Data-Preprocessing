@@ -1,0 +1,18 @@
+type: choice
+is_multiple_choice: false
+options:
+- text: No value
+- text: A value equal to the mean of a column
+- text: A value equal to 0
+- text: A value equal to " " (empty string)
+files:
+- name: main.py
+  visible: true
+  text: |+
+    #  You can experiment here, it won’t be checked
+
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/14687#comment
+status: Solved
+record: -1
+local_check: false

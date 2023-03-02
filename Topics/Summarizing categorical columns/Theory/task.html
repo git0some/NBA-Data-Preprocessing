@@ -1,0 +1,80 @@
+<h2>Summarizing categorical columns</h2>
+<html><body><p><code class="language-python">pandas</code> is famous for its analytical tools. When we need to compare datasets or evaluate the data that is grouped by categories, we need to refer to the summary statistics. Entry-by-entry data comparison is impractical. Moreover, an analyst should describe the myriad of small data discrepancies in more general terms. Let's take a look at the most basic possible discrepancies – <strong>quantity discrepancies</strong>.</p>
+<h5 id="counting">Counting</h5>
+<p>At first, we need to import <code class="language-python">pandas</code>. In this topic, we are going to use the Palmer penguins dataset. You can import it with one line from GitHub (requires internet connection):</p>
+<pre><code class="language-python">import pandas as pd
+df = pd.read_csv('https://raw.githubusercontent.com/mwaskom/seaborn-data/master/penguins.csv')</code></pre>
+<p>Column names are self-explanatory:</p>
+<pre><code class="language-python">df.head(3)</code></pre>
+<p>Output:<br/>
+<img alt="" src="https://ucarecdn.com/ebcb00a8-45d8-47ae-95fc-41677a60f1fe/"/></p>
+<p> </p>
+<p style="text-align: center;"><img alt="" height="162" name="logo.png" src="https://ucarecdn.com/878fb833-de33-48c5-86b7-8b88076f4cc2/" width="140"/></p>
+<p>Once the dataset is imported, we need to count the following values:</p>
+<ol>
+<li>Non-null values,</li>
+<li>Missing values,</li>
+<li>All values, including the missing values,</li>
+<li>The number of unique values.</li>
+</ol>
+<p>We can calculate those values not only for the numeric but also for categorical data.</p>
+<p><strong>1. Non-nulls</strong></p>
+<p>How many non-NA values do we have in the column "sex"? To make it really neat and simple, use the <code class="language-python">Series.count()</code> method:</p>
+<pre><code class="language-python">df.sex.count()</code></pre>
+<p>Output:<br/>
+<img alt="" src="https://ucarecdn.com/82011bd9-4adf-4fd8-9118-744ad8881d93/"/></p>
+<p><strong>2. Nulls</strong></p>
+<p>To count the missing values in the column "sex", we need to take a bit more complex approach. By using <code class="language-python">Series.isna()</code>, we'll get a boolean object, where NaN values are mapped as <code class="language-python">True</code>, and everything else as <code class="language-python">False</code>.</p>
+<pre><code class="language-python">df.sex.isna()
+</code></pre>
+<p>Output:<br/>
+<img alt="" src="https://ucarecdn.com/c08a50fe-3eb1-4090-84b8-db02d399893d/"/></p>
+<p>Keep in mind that <code class="language-python">True</code> and <code class="language-python">False</code> in Python are like 1 and 0, respectively. So, to count all the missing values, we need to find the sum of the <code class="language-python">.isna()</code> output. For this purpose, we'll use <code class="language-python">DataFrame.sum()</code>. Let's combine those two methods in one line:</p>
+<pre><code class="language-python">df.sex.isna().sum()
+</code></pre>
+<p>Output:<br/>
+<img alt="" src="https://ucarecdn.com/b35d3f2e-5423-4d21-a289-debfb5bbd211/"/></p>
+<p>The "sex" column contains eleven missing values.</p>
+<p><strong>3. All values</strong></p>
+<p>Next, we need to count the total number of observations. The overall number of cells in a column is the column length. To output it, we will use the <code class="language-python">DataFrame.shape</code> attribute and take its first element (the number of rows):</p>
+<pre><code class="language-python">df.shape[0]
+</code></pre>
+<p>Output:<br/>
+<img alt="" src="https://ucarecdn.com/e91037ed-a28b-4b1a-acfa-8c9d9ed32c42/"/></p>
+<p>We have 344 observations in total.</p>
+<p></p><div class="alert alert-primary"> Note that <code class="language-python">.shape</code> is an attribute, not a method<em>. </em>You cannot call it, so no parentheses are needed. </div>
+<p><strong>4. Unique values</strong></p>
+<p>Suppose we want to find the number of unique penguin species that were studied on the Palmer Archipelago. It is similar to <code class="language-python">COUNT DISTINCT</code> used in SQL. To do it, we will use the <code class="language-python">Series.nunique()</code> method:</p>
+<pre><code class="language-python">df.species.nunique()
+</code></pre>
+<p>Output:<br/>
+<img alt="" src="https://ucarecdn.com/38053941-afe3-4de2-96bc-546933a24c51/"/></p>
+<p>There are three species. You could have guessed it already by looking at the picture at the start of this topic :)</p>
+<h5 id="seriesvalue_counts-seriesunique">Series.value_counts &amp; Series.unique</h5>
+<p>You can also easily find the frequency of each unique value. It can be useful for categorical columns, like species. Let's find how many specimens of each species are included in the dataset using <code class="language-python">.value_counts()</code>:</p>
+<pre><code class="language-python">df.species.value_counts()
+</code></pre>
+<p>Output:<br/>
+<img alt="" src="https://ucarecdn.com/92c606c3-3c5a-4366-81e5-80483dbe0b1b/"/></p>
+<p>This is a very useful method! You don't need <code class="language-python">pandas</code> grouping or aggregations. Note that the result is a Series with a unique value as the index and a number as the value. So we can, for example, find particular entries in it:</p>
+<pre><code class="language-python">df.species.value_counts().loc[['Adelie', 'Chinstrap']]
+</code></pre>
+<p>Output:<br/>
+<img alt="" src="https://ucarecdn.com/9582de35-1a05-42ce-9653-b58728d28c98/"/></p>
+<p>But sometimes what we need is just a list of unique values. To achieve it, use <code class="language-python">.unique()</code>:</p>
+<pre><code class="language-python">df.species.unique()
+</code></pre>
+<p>Output:<br/>
+<img alt="" src="https://ucarecdn.com/340dd529-ef01-42ec-b419-1ab75657878a/"/></p>
+<p>It produces the list. Note that it is a <code class="language-python">NumPy</code> array, but you can iterate through it or index it like a simple Python list. For example, let's add "The" and "penguin" to it:</p>
+<pre><code class="language-python">[('The ' + species + ' penguin') for species in df.species.unique()]
+</code></pre>
+<p>Output:<br/>
+<img alt="" src="https://ucarecdn.com/c72567ec-5c13-4c26-b7f7-01589ae6a116/"/></p>
+<p>Neat! Now you are ready to move on to more complex comparing measures.</p>
+<h5 id="conclusion">Conclusion</h5>
+<p>Now you know how to:</p>
+<ul>
+<li>count null, non-null, distinct, and all values with <code class="language-python">.isna().sum()</code>, <code class="language-python">.count()</code>, <code class="language-python">.nunique(),</code> and <code class="language-python">.shape[0]</code> methods respectively;</li>
+<li>count the unique values with the <code class="language-python">value_counts()</code> method.</li>
+</ul></body></html>

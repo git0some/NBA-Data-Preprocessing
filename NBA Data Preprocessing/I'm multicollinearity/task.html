@@ -1,0 +1,23 @@
+<h5 id="description">Description</h5>
+<p><strong>Multicollinearity</strong> is a notorious problem for the linear regression algorithm. It refers to the high correlations between two or more features in the data that lead to inaccurate estimates of parameters and a decrease in your ML model's predictive power. In the previous stage, we linked multicollinearity with the concept of linear dependence. Now, let's discuss this concept using the normal linear regression model.</p>
+<p>To estimate the <span class="math-tex">\(\vec{\beta}\)</span> parameters of a multiple linear regression problem, you have to solve the following equation:</p>
+<p><span class="math-tex">\[\vec{\beta} = {(X^TX)^{-1}Xy}\]</span>There may be a problem: if <span class="math-tex">\(X^TX\)</span> is not invertible or is a singular matrix. It happens when a column is a linear combination of the other(s). When this happens, we say that the features are linearly dependent. Therefore, the determinant of <span class="math-tex">\(X^TX\)</span> equals zero and <span class="math-tex">\(\vec{\beta}\)</span> can't be derived from the above equation. When multicollinearity in <span class="math-tex">\(X\)</span> and <span class="math-tex">\(X^TX\)</span> is still invertible, the variance of <span class="math-tex">\(\vec{\beta}\)</span>, <span class="math-tex">\(Var[\hat{\beta}] = \sigma^2(X^TX)^{-1}\)</span> is huge. It decreases the predictive power of the linear model. </p>
+<p>To learn more about multicollinearity, you can refer to the article <a href="https://towardsdatascience.com/everything-you-need-to-know-about-multicollinearity-2f21f082d6dc" rel="noopener noreferrer nofollow" target="_blank">"Understanding Multicollinearity and How to Detect it in Python"</a> on Towards Data Science.</p>
+<p>In this stage, you will check your data for multicollinearity using the <strong>Pearson correlation coefficient</strong>. First, calculate the correlation matrix for the numerical features in <span class="math-tex">\(X\)</span> and take note of both features with a correlation coefficient above <code class="language-python">0.5</code> or below <code class="language-python">-0.5</code>. Second, take both features and find their correlation coefficients with the target variable. Finally, drop the feature that has the lowest correlation coefficient with the target variable.</p>
+<h5 id="objectives">Objectives</h5>
+<p>In this stage, you will build the <code class="language-python">multicol_data</code> function given the DataFrame preprocessed by <code class="language-python">feature_data</code> function from the previous stage. Inside the <code class="language-python">multicol_data</code> function:</p>
+<ol>
+<li>The input parameter is the returned DataFrame from the <code class="language-python">feature_data</code> function. It contains features and the target variable, which is <code class="language-python">salary</code>.</li>
+<li>Drop multicollinear features from the DataFrame that you got from the <code class="language-python">feature_data</code>;</li>
+<li>Return the modified DataFrame.</li>
+</ol>
+<p></p><div class="alert alert-primary">Your program is not required to print anything as a result. The <code class="language-python">clean_data</code>, <code class="language-python">feature_data</code>, and <code class="language-python">multicol_data</code> functions will be imported to the test program and checked there. So make sure to follow all the objectives described above.</div>
+<h5 id="example">Example</h5>
+<p><strong>Example 1</strong>:<em> calling the multicol_data function without the target gives the following output</em></p>
+<pre><code class="language-python">path = "../Data/nba2k-full.csv"
+df_cleaned = clean_data(path)
+df_featured = feature_data(df_cleaned)
+df = multicol_data(df_featured)
+print(list(df.select_dtypes('number').drop(columns='salary')))</code></pre>
+<p><em>Output</em>:</p>
+<pre><code class="language-python">[bmi, experience, age]</code></pre>

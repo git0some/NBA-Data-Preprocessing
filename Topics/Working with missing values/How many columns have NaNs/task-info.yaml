@@ -1,0 +1,36 @@
+type: dataset
+custom_name: How many columns have NaNs?
+files:
+- name: main.py
+  visible: true
+  text: "#  write your code here \n\n"
+  learner_created: false
+- name: data/sample/input.txt
+  visible: true
+  text: |
+    year,age,degree
+    3,18,M
+    NaN,18,B
+    2,21,M
+    NaN,19,B
+    NaN,19,B
+    2,29,NaN
+    1,28,NaN
+    3,29,M
+    1,28,M
+    3,18,NaN
+    1,27,NaN
+    2,25,M
+    2,20,M
+    1,20,B
+    3,23,B
+  learner_created: false
+- name: data/dataset/input.txt
+  visible: true
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/14691#comment
+status: Solved
+feedback:
+  message: <html>Correct solution</html>
+  time: "Fri, 24 Feb 2023 21:23:38 UTC"
+record: -1

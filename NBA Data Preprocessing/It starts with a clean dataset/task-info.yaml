@@ -1,0 +1,149 @@
+type: edu
+files:
+- name: test/__init__.py
+  visible: false
+  learner_created: false
+- name: test/tests.py
+  visible: false
+  text: |
+    from hstest import StageTest, TestCase, CheckResult
+    from hstest.stage_test import List
+    import pandas as pd
+    import os
+
+    module = True
+    type_err = True
+    other_err = True
+    try:
+        from preprocess import clean_data
+
+        path = "../Data/nba2k-full.csv"
+        df = clean_data(path)
+    except ImportError:
+        clean_data = None
+        module = False
+    except TypeError as type_err_exc:
+        type_err_exc_message = type_err_exc
+        type_err = False
+    except Exception as other_exc:
+        other_exc_message = other_exc
+        other_err = False
+
+
+    class Tests(StageTest):
+
+        def generate(self) -> List[TestCase]:
+            return [TestCase(time_limit=1000000)]
+
+        def check(self, reply: str, attach):
+
+            if not os.path.exists('preprocess.py'):
+                return CheckResult.wrong('The file `preprocess.py` is not found. Your solution should be located there.\n'
+                                         'Please do not rename the file.')
+
+            if not module:
+                return CheckResult.wrong('The function `clean_data` was not found in your solution.')
+
+            if not type_err:
+                return CheckResult.wrong(f"An error occurred during execution of your solution.\n"
+                                         f"The function `clean_data` should take one input parameter: path to the dataset.\n"
+                                         f"An internal error message:\n{type_err_exc_message}")
+
+            if not other_err:
+                return CheckResult.wrong(f"An error occurred during execution of `clean_data` function.\n"
+                                         f"The error message:\n{other_exc_message}\n\n"
+                                         f"Refer to the Objectives and Examples sections.")
+
+            if df is None:
+                return CheckResult.wrong('The `clean_data` function returns nothing while it should return a DataFrame')
+
+            if not isinstance(df, pd.DataFrame):
+                return CheckResult.wrong(f'The `clean_data` function returns a {type(df)} instead of pandas DataFrame')
+
+            col_used = ['b_day', 'draft_year', 'team', 'height', 'weight', 'salary', 'country', 'draft_round']
+
+            for one_col in col_used:
+                if one_col not in df:
+                    return CheckResult.wrong(f'The column {one_col} is not in the DataFrame')
+
+            df_datetime = df.select_dtypes(include=['datetimetz', 'datetime']).columns.tolist()
+            if sorted(df_datetime) != sorted(['b_day', 'draft_year']):
+                return CheckResult.wrong('Convert `b_day` and `draft_year` columns to datetime objects')
+
+            if list(df.loc[0, ['b_day']]) != [pd.Timestamp('1984-12-30')]:
+                return CheckResult.wrong('Dates in the `b_day` column are not parsed correctly')
+
+            if list(df.loc[0, ['draft_year']]) != [pd.Timestamp('2003')]:
+                return CheckResult.wrong('Dates in the `draft_year` column are not parsed correctly')
+
+            if df.team.isna().sum() != 0:
+                return CheckResult.wrong('There are missing values in the `team` column')
+
+            if df.team.str.contains("No Team").sum() == 0:
+                return CheckResult.wrong("Replace missing values with `No Team` in the team column")
+
+            df_floats = df.select_dtypes(include=['float']).columns
+            if sorted(df_floats) != sorted(['height', 'weight', 'salary']):
+                return CheckResult.wrong('The height, weight, and salary columns should be float')
+
+            if list(df.loc[0, ['height', 'weight']]) != [2.06, 113.4]:
+                return CheckResult.wrong('The height should be in meters and the weight in kg')
+
+            df_country = list(df.country.unique())
+            if sorted(df_country) != sorted(['USA', 'Not-USA']):
+                return CheckResult.wrong('The country columns should have two unique categories: USA and Not-USA')
+
+            undrafted_idx = [81, 101, 109, 121, 167, 175, 188, 197, 204, 205, 213, 227, 228, 237, 241, 246, 247, 248, 250,
+                            255, 256, 258, 270, 281, 284, 286, 287, 289, 297, 298, 301, 302, 305, 308, 311, 314, 317, 319,
+                            322, 323, 324, 325, 332, 339, 341, 346, 348, 351, 359, 360, 366, 368, 374, 396, 401, 404, 406,
+                            408, 412, 414, 415, 417, 420, 424, 426, 427, 428]
+            if df['draft_round'].loc[undrafted_idx].tolist() != ['0'] * len(undrafted_idx):
+                return CheckResult.wrong('Values in `draft_round` column are not processed correctly.\n'
+                                         'Replace "Undrafted" with "0".')
+
+            return CheckResult.correct()
+
+
+    if __name__ == '__main__':
+        Tests().run_tests()
+  learner_created: false
+- name: preprocess.py
+  visible: true
+  text: |
+    import pandas as pd
+    import os
+    import requests
+
+    # Checking ../Data directory presence
+    if not os.path.exists('../Data'):
+        os.mkdir('../Data')
+
+    # Download data if it is unavailable.
+    if 'nba2k-full.csv' not in os.listdir('../Data'):
+        print('Train dataset loading.')
+        url = "https://www.dropbox.com/s/wmgqf23ugn9sr3b/nba2k-full.csv?dl=1"
+        r = requests.get(url, allow_redirects=True)
+        open('../Data/nba2k-full.csv', 'wb').write(r.content)
+        print('Loaded.')
+
+    data_path = "../Data/nba2k-full.csv"
+
+    # write your code here
+  learner_created: false
+- name: tests.py
+  visible: false
+  text: |
+    from test.tests import Tests
+
+    if __name__ == '__main__':
+        Tests().run_tests()
+  learner_created: false
+- name: cleaned_data.csv
+  visible: true
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/22667#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Fri, 24 Feb 2023 23:04:30 UTC"
+record: 1

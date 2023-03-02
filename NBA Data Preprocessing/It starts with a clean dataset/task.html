@@ -1,0 +1,45 @@
+<h5 id="theory">Theory</h5>
+<p>Let's briefly discuss data type conversions in <code class="language-python">pandas</code> that you will need to complete the stage.</p>
+<ul>
+<li>You can convert <code class="language-python">object</code> type to <code class="language-python">datetime</code> type with the code snippet below: 
+
+	<pre><code class="language-python">df['column_name'] = pd.to_datetime(df['column_name'], format='%m/%d/%y')</code></pre>
+	Note how the <code class="language-python">format</code> parameter defines the date parsing format.</li>
+<li>You can convert <code class="language-python">object</code> type to <code class="language-python">float</code> type with the code snippet below:
+	<pre><code class="language-python">df["column_name"] = df["column_name"].astype('float')</code></pre>
+<p>This can be done only with those objects that are "almost" numerical. For example, <code class="language-python">"3"</code> can be parsed as <code class="language-python">float</code> but <code class="language-python">"three"</code> cannot.</p>
+</li>
+</ul>
+<h5 id="description">Description</h5>
+<p>Machine learning algorithms are capable of processing big numbers. However, they can't handle raw text and special characters. The latter may include currency signs (for example, $) or measurement units (kg, in). Measurements may also be stated in different units (for example, weight in kg/lb), so you have to choose which unit you intend to use in your data. The records for unwanted units will be considered extraneous and removed. Most ML algorithms don't support missing values, so we have to deal with them before passing the data to ML model<strong>. </strong></p>
+<p>After dealing with missing values and extraneous characters, it's better to parse the features in the appropriate format for further stages. For example, time features are to be parsed as <code class="language-python">datetime</code> objects, and features that are continuous variables — as floats.</p>
+<p>Once you've completed the steps described above, your data is "clean". In this project, you will practice on the dataset on NBA players. We have automated the data download process in the <em>.py</em> file provided to you. However, if that is inconvenient, feel free to download the <a href="https://www.dropbox.com/s/wmgqf23ugn9sr3b/nba2k-full.csv?dl=1" rel="noopener noreferrer nofollow" target="_blank">nba2k-full.csv</a> dataset on your own.</p>
+<p>You can have a look at <a href="https://www.kaggle.com/datasets/isaienkov/nba2k20-player-dataset" rel="noopener noreferrer nofollow" target="_blank">the dataset profile on Kaggle</a> to learn more about it.</p>
+<h5 id="objectives">Objectives</h5>
+<p>In this first stage, create a function called <code class="language-python">clean_data</code> that takes the path to the dataset as a parameter. The function must:</p>
+<ol>
+<li>Load a DataFrame from the location specified in the <code class="language-python">path</code> parameter;</li>
+<li>Parse the <code class="language-python">b_day</code> and <code class="language-python">draft_year</code> features as <code class="language-python">datetime</code> objects;</li>
+<li>Replace the missing values in <code class="language-python">team</code> feature with <code class="language-python">"No Team"</code>;</li>
+<li>Take the <code class="language-python">height</code> feature in meters, the height feature contains metric and customary units;</li>
+<li>Take the <code class="language-python">weight</code> feature in kg, the weight feature contains metric and customary units;</li>
+<li>Remove the extraneous <code class="language-python">$</code> character from the <code class="language-python">salary</code> feature;</li>
+<li>Parse the <code class="language-python">height</code>, <code class="language-python">weight</code>, and <code class="language-python">salary</code> features as floats;</li>
+<li>Categorize the <code class="language-python">country</code> feature as <code class="language-python">"USA"</code> and <code class="language-python">"Not-USA"</code>;</li>
+<li>Replace the cells containing <code class="language-python">"Undrafted"</code> in the <code class="language-python">draft_round</code> feature with the string <code class="language-python">"0"</code>;</li>
+<li>Return the modified DataFrame.</li>
+</ol>
+<p></p><div class="alert alert-primary">Your program is not required to print anything as a result. The <code class="language-python">clean_data</code> function will be imported to the test program and checked there. So make sure to follow all the objectives described above.</div>
+<h5 id="example">Example</h5>
+<p><strong>Example 1: </strong><em>calling the </em><code class="language-python">clean_data</code><em> function with the path:</em></p>
+<pre><code class="language-python">path = "../Data/nba2k-full.csv"
+df = clean_data(path)
+print(df[['b_day', 'team', 'height', 'weight', 'country', 'draft_round', 'draft_year', 'salary']].head())</code></pre>
+<p><em>Output:</em> </p>
+<pre><code class="language-no-highlight">
+          b_day	              team	      height	weight	country	draft_round	draft_year	salary
+0	1984-12-30	Los Angeles Lakers	2.06	113.4	USA	   1	        2003-01-01	37436858.0
+1	1991-06-29	Los Angeles Clippers    2.01	102.1	USA	   1	        2011-01-01	32742000.0
+2	1994-12-06	Milwaukee Bucks	        2.11	109.8	Not-USA	   1	        2013-01-01	25842697.0
+3	1988-09-29	Brooklyn Nets	        2.08	104.3	USA	   1	        2007-01-01	37199000.0
+4	1989-08-26	Houston Rockets	        1.96	99.8	USA	   1	        2009-01-01	38199000.0</code></pre>

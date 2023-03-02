@@ -1,0 +1,31 @@
+<h5 id="description">Description</h5>
+<p>The hypothesis of a linear regression model goes like this:</p>
+<p><span class="math-tex">\[\hat{y} = X\vec{\beta} = \beta_0 + \beta_1\cdot x_1 + \beta_2 \cdot x_2 + \cdot\cdot\cdot + \beta_n\cdot x_n\]</span>It's clear that the performance of the predicted value <span class="math-tex">\(\hat{y}\)</span> depends on the quality of the input features: <span class="math-tex">\(x_1, x_2, x_3, \cdot\cdot\cdot , x_n\)</span>. The question then is, how do you get high-quality features? The first technique is <strong>feature engineering</strong> — applying the domain knowledge to generate new features from the existing ones. Feature engineering may also involve identifying additional data to include in your dataset to improve ML models' predictive power. </p>
+<p>Another way to improve the quality of the input data is by <strong>removing the features with high cardinality</strong>. Those are categorical features, which have too many unique values. In this stage, we consider a feature to possess high cardinality when it has 50 unique values or more.</p>
+<p>Additionally, when a new feature is engineered from the existing ones, it is best to exclude the old features because the engineered feature is usually a linear combination of the old features. In other words, the old and generated variables are not linearly independent. If variables are linearly dependent, one or more of them are unnecessary and should be dropped. Linear dependence is closely related to the concept of <strong>multicollinearity</strong>.</p>
+<h5 id="objectives">Objectives</h5>
+<p>In this stage, you will build the<span style="color: #000000;"><code class="language-python">feature_data</code></span> function with the output of the <code class="language-python">clean_data</code> function. Inside the <code class="language-python">feature_data</code> function:</p>
+<ol>
+<li>The input parameter is the returned DataFrame from the <code class="language-python">clean_data</code> function from the previous stage;</li>
+<li>Get the unique values in the <code class="language-python">version</code> column of the DataFrame you got from <code class="language-python">clean_data</code> as a year (<code class="language-python">2020</code>, for example) and parse as a <code class="language-python">datetime</code> object;</li>
+<li>Engineer the <code class="language-python">age</code> feature by subtracting <code class="language-python">b_day</code> column from <code class="language-python">version</code>. Calculate the value as year;</li>
+<li>Engineer the <code class="language-python">experience</code> feature by subtracting <code class="language-python">draft_year</code> column from <code class="language-python">version</code>. Calculate the value as year;</li>
+<li>Engineer the <code class="language-python">bmi</code> (body mass index) feature from <code class="language-python">weight</code> (<span class="math-tex">\(w\)</span>) and <code class="language-python">height</code> (<span class="math-tex">\(h\)</span>) columns. The formula is <span class="math-tex">\(\text {bmi} = w / h^2\)</span>;</li>
+<li>Drop the <code class="language-python">version</code>, <code class="language-python">b_day</code>, <code class="language-python">draft_year</code>, <code class="language-python">weight</code>, and <code class="language-python">height</code> columns;</li>
+<li>Remove the high cardinality features;</li>
+<li>Return the modified DataFrame.</li>
+</ol>
+<p></p><div class="alert alert-primary">Your program is not required to print anything as a result. The <code class="language-python">clean_data</code> and <code class="language-python">feature_data</code> functions will be imported to the test program and checked there. So make sure to follow all the objectives described above.</div>
+<h5 id="example">Example</h5>
+<p><strong>Example 1:</strong> <em>Calling the </em><code class="language-python">feature_data</code><em> function:</em></p>
+<pre><code class="language-python">path = "../Data/nba2k-full.csv"
+df_cleaned = clean_data(path)
+df = feature_data(df_cleaned)
+print(df[['age', 'experience', 'bmi']].head())</code></pre>
+<p><em>Output:</em></p>
+<pre><code class="language-no-highlight">    age	  experience	bmi
+0	36	  17	26.722594
+1	29	   9	25.271652
+2	26	   7	24.662519
+3	32	  13	24.107803
+4	31	  11	25.978759</code></pre>
